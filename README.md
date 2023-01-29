@@ -58,32 +58,31 @@
 
 <br>
 
-### 5.2 ChallengeController [코드 확인](https://github.com/dbgys1127/wiselife/blob/main/server/wiselife/src/main/java/be/wiselife/challenge/controller/ChallengeController.java) 
+### 5.2 ChallengeController [코드링크-ChallengeController](https://github.com/dbgys1127/wiselife/blob/main/server/wiselife/src/main/java/be/wiselife/challenge/controller/ChallengeController.java) 
 
-- 가입된 사용자의 정보 확인 [코드 확인](https://github.com/dbgys1127/wiselife/blob/main/server/wiselife/src/main/java/be/wiselife/aop/LoginAspect.java) 
-  - 모든 페이지 접근 마다 필요한 작업으로 중복방지를 위해 AOP로 관심사를 분리 
+- 가입된 사용자의 정보 확인 [코드링크-LoginAspect](https://github.com/dbgys1127/wiselife/blob/main/server/wiselife/src/main/java/be/wiselife/aop/LoginAspect.java) 
+  - 모든 페이지 접근 마다 필요한 작업으로 `중복방지를 위해 AOP로 관심사를 분리` 
 - 인증사진 S3 등록과 S3에 저장된 주소 DB 저장 요청
 
 ### 5.3 ChallengeService 
-- 인증사진 등록과 관련된 로직 처리를 ImageService에 요청함
+- 인증사진 등록과 관련된 로직 처리를 ImageService에 요청했습니다.
 
-### 5.4 ImageService [코드 확인](https://github.com/dbgys1127/wiselife/blob/main/server/wiselife/src/main/java/be/wiselife/image/service/ImageService.java) 
+### 5.4 ImageService [코드링크-ImageService](https://github.com/dbgys1127/wiselife/blob/main/server/wiselife/src/main/java/be/wiselife/image/service/ImageService.java) 
 
- 1. 인증 가능 시간인가? 
- <details>
- <summary><b>코드 펼치기</b></summary>
- <div markdown="1">
- 
-    ```java
-    public Challenge patchChallengeCertImage(Challenge challenge, Member loginMember) {
-        log.info("patchReviewImage tx start");
+ 1. 인증 가능 시간인가? <details><summary><b>코드 펼치기</b></summary><img src ="img/인증가능시간확인.001.png" width="100%" height="auto"/></details>
+    - 사용자가 사진 등록하는 시간이 챌린지 인증시간이 아니면, 예외 발생
 
-        //인증가능 시간인지 검증
-        if(!isAuthAvailableTime(challenge))
-           throw new BusinessLogicException(ExceptionCode.NOT_CERTIFICATION_AVAILABLE_TIME);
-    ```
- </div>
- </details>
-    - 인증 사진 등록하는 시간이 챌린지 인증시간이 아니면, 예외 발생
+ 2. 챌린지 참여회원인가?<details><summary><b>코드 펼치기</b></summary><img src ="img/참여회원.001.png" width="100%" height="auto"/></details>
+    - 사용자가 챌린지에 참여하고 있는 회원이 아니라면, 챌린지에 참여를 먼저 해야한다는 예외 발생
 
- 2. 챌린지 참여회원인가?
+ 3. 같은 시간에 등록한 사진이 존재하는가?<details><summary><b>코드 펼치기</b></summary><img src ="img/수정여부.001.png" width="100%" height="auto"/><br><img src ="img/수정여부확인후.001.png" width="100%" height="auto"/></details>
+    - `고민` 인증사진을 수정할때, 따로 URI를 둬야할까? 
+    
+    - `해결책` 컨트롤러에서 인증사진 처리 메서드를 `patch`MemberCertification로 둔 것처럼 요청을 처리하는 비즈니스 로직 부분에서 동일한 시간에 사진이 있다면 수정, 없다면 신규등록되게 구성하였습니다.
+
+4. 오늘 의무 인증 횟수를 다 채웠는가?<details><summary><b>코드 펼치기</b></summary><img src ="img/인증횟수.001.png" width="100%" height="auto"/></details>
+    - 챌린지에서 명시된 금일 인증횟수를 초과했을때, 불필요한 데이터가 쌓이지 않게 예외처리가 필요하다 생각했습니다.
+
+5. 인증 사진이 성공적으로 등록된 후 처리되는 작업
+    - 챌린지 참여 회원이 그날 의무 인증횟수를 만족하면 성공일로 간주하고, 성공률을 계산하였습니다. (ex. 4일차에 3일 성공하면 75%)<details><summary><b>코드 펼치기</b></summary><img src ="img/성공인정.001.png" width="100%" height="auto"/></details>
+    - 인증할때 마다 회원 등급 변화 <details><summary><b>코드 펼치기</b></summary><img src ="img/등급변화.001.png" width="100%" height="auto"/></details>
