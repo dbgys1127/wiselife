@@ -58,6 +58,32 @@
 
 <br>
 
-### 5.2 ChallengeController
-- 가입된 사용자의 접근 인지 확인 
-  - 모든 페이지 접근 마다 필요한 작업으로 중복방지를 위해 AOP로 관심사를 분리함 [코드 확인](https://github.com/dbgys1127/wiselife/blob/main/server/wiselife/src/main/java/be/wiselife/aop/LoginAspect.java) 
+### 5.2 ChallengeController [코드 확인](https://github.com/dbgys1127/wiselife/blob/main/server/wiselife/src/main/java/be/wiselife/challenge/controller/ChallengeController.java) 
+
+- 가입된 사용자의 정보 확인 [코드 확인](https://github.com/dbgys1127/wiselife/blob/main/server/wiselife/src/main/java/be/wiselife/aop/LoginAspect.java) 
+  - 모든 페이지 접근 마다 필요한 작업으로 중복방지를 위해 AOP로 관심사를 분리 
+- 인증사진 S3 등록과 S3에 저장된 주소 DB 저장 요청
+
+### 5.3 ChallengeService 
+- 인증사진 등록과 관련된 로직 처리를 ImageService에 요청함
+
+### 5.4 ImageService [코드 확인](https://github.com/dbgys1127/wiselife/blob/main/server/wiselife/src/main/java/be/wiselife/image/service/ImageService.java) 
+
+ 1. 인증 가능 시간인가? 
+ <details>
+ <summary><b>코드 펼치기</b></summary>
+ <div markdown="1">
+ 
+    ```java
+    public Challenge patchChallengeCertImage(Challenge challenge, Member loginMember) {
+        log.info("patchReviewImage tx start");
+
+        //인증가능 시간인지 검증
+        if(!isAuthAvailableTime(challenge))
+           throw new BusinessLogicException(ExceptionCode.NOT_CERTIFICATION_AVAILABLE_TIME);
+    ```
+ </div>
+ </details>
+    - 인증 사진 등록하는 시간이 챌린지 인증시간이 아니면, 예외 발생
+
+ 2. 챌린지 참여회원인가?
