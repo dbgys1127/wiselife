@@ -63,7 +63,7 @@
 
 ### 4.4 ImageService [코드링크-ImageService 내 patchChallengeCertImage 메서드](https://github.com/dbgys1127/wiselife/blob/main/server/wiselife/src/main/java/be/wiselife/image/service/ImageService.java) 
 
- 1. 인증 가능 시간인가? <details><summary><b>코드 펼치기</b></summary><img src ="img/인증가능시간확인.001.png" width="100%" height="auto"/></details>
+ 1. 인증 가능 시간인가? <details><summary><b>코드 펼치기</b></summary><img src ="img/인증가능시간확인.001.001.png" width="100%" height="auto"/></details>
     - 사용자가 사진 등록하는 시간이 챌린지 인증시간이 아니면, 예외 발생
 
  2. 챌린지 참여회원인가?<details><summary><b>코드 펼치기</b></summary><img src ="img/참여회원.001.png" width="100%" height="auto"/></details>
